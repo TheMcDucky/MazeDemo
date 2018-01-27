@@ -1,5 +1,3 @@
-package com.mcducky.maze;
-
-public abstract class  GameObject {
-    public abstract void update();
+public interface  GameObject {
+    void update(double deltaTime);
 }

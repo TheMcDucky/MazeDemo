@@ -1,24 +1,23 @@
-package com.mcducky.maze;
 import java.awt.event.KeyEvent;
 import java.awt.event.KeyListener;
 import javax.swing.*;
-public class Camera extends GameObject implements KeyListener {
-    private Vector2 position;
-    private double rotation;
+public class Camera implements GameObject {
+    private Vector2 position = new Vector2();
+    public double zNear = 0.1;
+    public double zFar = -1;
+    public double focalLength = 100f;
+    private double rotation = 0;
 
-    public Camera(JFrame frame){
-
-        frame.addKeyListener(this);
-        position = new Vector2();
-        rotation = 0;
+    public Camera() {
+    
     }
 
     public void setRotation(double rotation){
         this.rotation = rotation;
-        while(rotation < 0)
-            this.rotation ++;
-        while(rotation >= 1)
-            this.rotation --;
+        while(this.rotation < 0)
+            this.rotation += Math.PI * 2;
+        while(this.rotation >= Math.PI * 2)
+            this.rotation -= Math.PI * 2;
     }
 
     public double getRotation(){
@@ -26,43 +25,26 @@ public class Camera extends GameObject implements KeyListener {
     }
 
     public void translate(Vector2 offset){
-        position.translate(offset);
+        position.add(offset);
     }
 
     public Vector2 getPosition(){
         return position;
     }
 
-    public void update() {
-    }
-
-    @Override
-    public void keyTyped(KeyEvent keyEvent) {
-
-    }
-
-    @Override
-    public void keyPressed(KeyEvent keyEvent) {
-        switch(keyEvent.getKeyCode()){
-            case KeyEvent.VK_LEFT:
-                setRotation(rotation + 1);
-                break;
-            case KeyEvent.VK_RIGHT:
-                 setRotation(rotation - 1);
-                break;
+    public void update(double delta) {
+        
+        if(Main.keys[KeyEvent.VK_RIGHT])
+            setRotation(rotation - delta * 2);
+        if(Main.keys[KeyEvent.VK_LEFT])
+            setRotation(rotation + delta * 2);
+        Vector2 heading = new Vector2(0, 1);
+        heading.rotate(rotation);
+        heading.scale(delta * 10);
+        if(Main.keys[KeyEvent.VK_UP])
+            position.add(heading);
+        if(Main.keys[KeyEvent.VK_DOWN]){
+            position.subtract(heading);
         }
-       System.out.println(getRotation());
-    }
-
-    @Override
-    public void keyReleased(KeyEvent keyEvent) {
-        /*switch(keyEvent.getKeyCode()){
-            case KeyEvent.VK_LEFT:
-                rot--;
-                break;
-            case KeyEvent.VK_RIGHT:
-                rot++;
-                break;
-        }*/
     }
 }
